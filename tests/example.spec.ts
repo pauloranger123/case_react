@@ -1,18 +1,40 @@
-import { test, expect } from '@playwright/test';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+import { test, expect } from '@playwright/test'
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+test('o marketplace Kurio abre corretamente', async ({ page }) => {
+  await page.goto('http://localhost:5173/')
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+  await expect(
+    page.getByRole('heading', {
+      name: 'Seja dono do futuro da arte digital',
+    }),
+  ).toBeVisible()
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Explore os NFTs' }),
+  ).toBeVisible()
+})
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
-});
+
+
+test('permite ver a NFT e detalhes', async ({ page }) => {
+  await page.goto('http://localhost:5173/')
+
+  await page.getByRole('link', { name: 'Ver NFT' }).first().click()
+
+  await expect(page).toHaveURL(/\/nft\/\d+/)
+})
+
+
+
+test('permite adicionar um NFT ao carrinho', async ({ page }) => {
+  await page.goto('http://localhost:5173/')
+
+  await page.getByRole('link', { name: 'Ver NFT' }).first().click()
+
+  await page.getByRole('button', { name: 'Adicionar ao carrinho' }).click()
+
+  await page.goto('http://localhost:5173/cart')
+
+  await expect(page.getByText('Digital Ape', { exact: false }).first()).toBeVisible()
+})

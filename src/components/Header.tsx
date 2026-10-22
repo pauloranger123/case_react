@@ -1,13 +1,26 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { useCart } from '../contexts/CartContext'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Header() {
   const { items } = useCart()
+  const { user, isLoading, logout } = useAuth()
+  const navigate = useNavigate()
 
   const cartCount = items.reduce(
     (total, item) => total + item.quantity,
-    0
+    0,
   )
+
+  async function handleLogout() {
+    try {
+      await logout()
+      await navigate({ to: '/' })
+    } catch {
+      // O AuthContext já limpa a sessão no finally do logout.
+      await navigate({ to: '/' })
+    }
+  }
 
   return (
     <header className="border-b border-[#39251B] bg-[#17100D] text-[#F5E9D8]">
@@ -46,12 +59,42 @@ export default function Header() {
             </span>
           </Link>
 
-          <button
-            type="button"
-            className="rounded-md bg-[#D99045] px-4 py-2 text-sm font-semibold text-[#21140C] transition hover:bg-[#F0AA5B]"
-          >
-            Entrar
-          </button>
+          {!isLoading && (
+            user ? (
+              <div className="flex items-center gap-3">
+                <span
+                  className="hidden max-w-32 truncate text-sm text-[#D4C1AD] sm:inline"
+                  title={user.name}
+                >
+                  Olá, {user.name}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => void handleLogout()}
+                  className="rounded-md border border-[#D99045] px-4 py-2 text-sm font-semibold text-[#E7A04B] transition hover:bg-[#39251B]"
+                >
+                  Sair
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className="rounded-md bg-[#D99045] px-4 py-2 text-sm font-semibold text-[#21140C] transition hover:bg-[#F0AA5B]"
+                >
+                  Entrar
+                </Link>
+
+                <Link
+                  to="/register"
+                  className="hidden rounded-md border border-[#D99045] px-4 py-2 text-sm font-semibold text-[#E7A04B] transition hover:bg-[#39251B] sm:inline-flex"
+                >
+                  Criar conta
+                </Link>
+              </div>
+            )
+          )}
         </div>
       </div>
     </header>

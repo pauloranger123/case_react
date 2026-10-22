@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
+import { useFavorites } from '../contexts/FavoritesContext'
 
 type NFTCardProps = {
   id: number
@@ -16,7 +16,12 @@ export default function NFTCard({
   creator,
   price,
 }: NFTCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false)
+  const { isFavorite, toggleFavorite } = useFavorites()
+  const favorite = isFavorite(id)
+
+  function handleFavorite() {
+    toggleFavorite({ id, image, name, creator, price })
+  }
 
   return (
     <article className="group overflow-hidden rounded-xl border border-[#3D2B20] bg-[#211711] transition duration-300 hover:-translate-y-1 hover:border-[#A86C35]">
@@ -29,16 +34,16 @@ export default function NFTCard({
 
         <button
           type="button"
-          onClick={() => setIsFavorite(!isFavorite)}
+          onClick={handleFavorite}
           aria-label={
-            isFavorite
+            favorite
               ? `Remover ${name} dos favoritos`
               : `Adicionar ${name} aos favoritos`
           }
-          aria-pressed={isFavorite}
+          aria-pressed={favorite}
           className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-[#17100D]/80 text-lg text-white backdrop-blur transition hover:bg-[#D99045] hover:text-[#21140C]"
         >
-          {isFavorite ? '♥' : '♡'}
+          {favorite ? '♥' : '♡'}
         </button>
       </div>
 
@@ -65,9 +70,9 @@ export default function NFTCard({
             to="/nft/$nftId"
             params={{ nftId: String(id) }}
             className="rounded-md border border-[#A86C35] px-3 py-2 text-xs font-semibold text-[#E7A04B] transition hover:bg-[#D99045] hover:text-[#21140C]"
-            >
+          >
             Ver NFT
-            </Link>
+          </Link>
         </div>
       </div>
     </article>

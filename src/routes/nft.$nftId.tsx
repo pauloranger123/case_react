@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useCart } from '../contexts/CartContext'
 import { api } from '../lib/api'
 import type { NFT } from '../data/nfts'
+import { useState } from 'react'
 
 export const Route = createFileRoute('/nft/$nftId')({
   component: NFTDetails,
@@ -11,6 +12,7 @@ export const Route = createFileRoute('/nft/$nftId')({
 
 function NFTDetails() {
   const { addItem } = useCart()
+  const [addedToCart, setAddedToCart] = useState(false)
   const { nftId } = Route.useParams()
 
   const {
@@ -120,23 +122,38 @@ function NFTDetails() {
               <span className="font-semibold">{nft.available}</span>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                addItem({
-                  id: nft.id,
-                  image: nft.image,
-                  name: nft.name,
-                  creator: nft.creator,
-                  price: nft.price.toFixed(2),
-                  blockchain: nft.blockchain,
-                  available: nft.available,
-                })
-              }}
-              className="mt-8 w-full rounded-xl bg-[#D99045] px-6 py-4 font-bold text-[#21140C]"
-            >
-              Adicionar ao carrinho
-            </button>
+            
+    <button
+      type="button"
+      onClick={() => {
+        addItem({
+          id: nft.id,
+          image: nft.image,
+          name: nft.name,
+          creator: nft.creator,
+          price: nft.price.toFixed(2),
+          blockchain: nft.blockchain,
+          available: nft.available,
+        })
+        setAddedToCart(true)
+      }}
+      className="mt-8 w-full rounded-xl bg-[#D99045] px-6 py-4 font-bold text-[#21140C] transition hover:bg-[#F0AA5B] active:scale-[0.98]"
+    >
+      {addedToCart ? '✓ NFT adicionada ao carrinho!' : 'Adicionar ao carrinho'}
+    </button>
+
+{addedToCart && (
+  <p
+    role="status"
+    className="mt-3 text-center font-medium text-green-400"
+  >
+    NFT adicionada ao carrinho com sucesso!
+    <Link to="/cart" className="ml-2 underline">
+      Ver carrinho
+    </Link>
+  </p>
+)}
+
 
             <p className="mt-3 text-center text-xs text-[#9F8977]">
               Marketplace demonstrativo. Nenhuma transação real será realizada.

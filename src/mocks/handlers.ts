@@ -1,4 +1,3 @@
-
 import { http, HttpResponse } from 'msw'
 import { nfts } from '../data/nfts'
 
